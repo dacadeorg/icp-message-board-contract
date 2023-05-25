@@ -1,0 +1,17 @@
+{
+  "name": "message_board",
+  "version": "0.1.0",
+  "description": "Internet Computer message board application",
+  "dependencies": {
+    "@dfinity/agent": "^0.15.6",
+    "@dfinity/candid": "^0.15.6"
+  },
+  "devDependencies": {
+    "azle": "0.16.2",
+    "@swc/core": "^1.3.60"
+  },
+  "engines": {
+    "node": "^12 || ^14 || ^16 || ^18"
+  }
+}
+

@@ -1,0 +1,24 @@
+type Message = record {
+  id : text;
+  attachmentURL : text;
+  title : text;
+  body : text;
+};
+type MessagePayload = record {
+  attachmentURL : text;
+  title : text;
+  body : text;
+};
+type Response = variant {
+  id : text;
+  messages : vec Message;
+  error : text;
+  message : Message;
+};
+service : () -> {
+  addMessage : (MessagePayload) -> (Response);
+  deleteMessage : (text) -> (Response);
+  getMessage : (text) -> (Response) query;
+  getMessages : () -> (Response) query;
+  updateMessage : (Message) -> (Response);
+}
