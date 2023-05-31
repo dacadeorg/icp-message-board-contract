@@ -56,14 +56,14 @@ where `message_board` is the name of the canister.
   "description": "Internet Computer message board application",
   "dependencies": {
     "@dfinity/agent": "^0.15.6",
-    "@dfinity/candid": "^0.15.6"
-  },
-  "devDependencies": {
-    "azle": "0.16.2",
-    "@swc/core": "^1.3.60"
+    "@dfinity/candid": "^0.15.6",
+    "azle": "0.16.2"
   },
   "engines": {
     "node": "^12 || ^14 || ^16 || ^18"
+  },
+  "devDependencies": {
+    "uuid": "^9.0.0"
   }
 }
 ```
@@ -89,11 +89,13 @@ Response:
 ```
 (
   variant {
-    message = record {
-      id = "1";
+    Ok = record {
+      id = "79daba82-18ce-4f69-afa1-7b3389368d1f";
       attachmentURL = "url/path/to/some/photo/attachment";
       title = "todo list";
+      updated_at = null;
       body = "some important things";
+      created_at = 1_685_568_853_915_736_000 : nat64;
     }
   },
 )
@@ -102,16 +104,18 @@ Response:
 ### update a message:
 - `dfx canister call <CANISTER_NAME> updateMessage`
 Example (In this case we include a message id in the payload to identify the message we want to update): 
-- `dfx canister call message_board updateMessage '(record {"id" = "1";  "title"= "UPDATED TODO LIST TITLE"; "body"= "some important things"; "attachmentURL"= "url/path/to/some/photo/attachment"})'`
+- `dfx canister call message_board updateMessage '("79daba82-18ce-4f69-afa1-7b3389368d1f", record {"title"= "UPDATED TODO LIST TITLE"; "body"= "some important things"; "attachmentURL"= "url/path/to/some/photo/attachment"})'`
 Response:
 ```
 (
   variant {
-    message = record {
-      id = "1";
+    Ok = record {
+      id = "79daba82-18ce-4f69-afa1-7b3389368d1f";
       attachmentURL = "url/path/to/some/photo/attachment";
       title = "UPDATED TODO LIST TITLE";
+      updated_at = opt (1_685_569_153_977_599_000 : nat64);
       body = "some important things";
+      created_at = 1_685_568_853_915_736_000 : nat64;
     }
   },
 )
@@ -129,12 +133,14 @@ Response:
 ```
 (
   variant {
-    messages = vec {
+    Ok = vec {
       record {
-        id = "1";
+        id = "79daba82-18ce-4f69-afa1-7b3389368d1f";
         attachmentURL = "url/path/to/some/photo/attachment";
         title = "UPDATED TODO LIST TITLE";
+        updated_at = opt (1_685_569_153_977_599_000 : nat64);
         body = "some important things";
+        created_at = 1_685_568_853_915_736_000 : nat64;
       };
     }
   },
@@ -144,8 +150,19 @@ Response:
 ### delete a message:
 - `dfx canister call <CANISTER_NAME> deleteMessage`
 Example (here we only provide a message id):
-- `dfx canister call message_board deleteMessage '("1")'`
-Response (returns the id of the deleted message):
+- `dfx canister call message_board deleteMessage '("79daba82-18ce-4f69-afa1-7b3389368d1f")'`
+Response (returns the deleted message):
 ```
-(variant { id = "1" })
+(
+  variant {
+    Ok = record {
+      id = "79daba82-18ce-4f69-afa1-7b3389368d1f";
+      attachmentURL = "url/path/to/some/photo/attachment";
+      title = "UPDATED TODO LIST TITLE";
+      updated_at = opt (1_685_569_153_977_599_000 : nat64);
+      body = "some important things";
+      created_at = 1_685_568_853_915_736_000 : nat64;
+    }
+  },
+)
 ```

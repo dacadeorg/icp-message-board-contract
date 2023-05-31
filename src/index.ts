@@ -1,4 +1,5 @@
-import { $query, $update, Record, StableBTreeMap, Variant, Vec, nat32, match } from 'azle';
+import { $query, $update, Record, StableBTreeMap, Vec, match, Result, nat64, ic, Opt } from 'azle';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * This type represents a message that can be listed on a board.
@@ -8,22 +9,15 @@ type Message = Record<{
     title: string;
     body: string;
     attachmentURL: string;
-}>;
+    created_at: nat64;
+    updated_at: Opt<nat64>;
+}>
 
 type MessagePayload = Record<{
     title: string;
     body: string;
     attachmentURL: string;
-}>;
-
-type Response = Variant<{
-    error: string;
-    message: Message;
-    messages: Vec<Message>;
-    id: string;
-}>;
-
-let idCounter: nat32 = 0;
+}>
 
 /**
  * `messageStorage` - it's a key-value datastructure that is used to store messages.
@@ -37,54 +31,61 @@ let idCounter: nat32 = 0;
  * 
  * Constructor values:
  * 1) 0 - memory id where to initialize a map
- * 2) 16 - it's a max size of the key in bytes.
+ * 2) 44 - it's a max size of the key in bytes (size of the uuid value that we use for ids).
  * 3) 1024 - it's a max size of the value in bytes. 
  * 2 and 3 are not being used directly in the constructor but the Azle compiler utilizes these values during compile time
  */
-const messageStorage = new StableBTreeMap<string, Message>(0, 16, 1024);
+const messageStorage = new StableBTreeMap<string, Message>(0, 44, 1024);
 
 $query;
-export function getMessages(): Response {
-    return { messages: messageStorage.values() };
+export function getMessages(): Result<Vec<Message>, string> {
+    return Result.Ok(messageStorage.values());
 }
 
 $query;
-export function getMessage(id: string): Response {
-    let response: Response;
+export function getMessage(id: string): Result<Message, string> {
     return match(messageStorage.get(id), {
-        Some: (message) => response = { message: message },
-        None: () => response = { error: `a message with id=${id} not found` }
+        Some: (message) => Result.Ok<Message, string>(message),
+        None: () => Result.Err<Message, string>(`a message with id=${id} not found`)
     });
 }
 
 $update;
-export function addMessage(payload: MessagePayload): Response {
-    if (typeof payload != 'object' || Object.keys(payload).length === 0) {
-        return { error: `invalid payload` };
-    }
-    const id = ++idCounter;
-    let message: Message = { id: id.toString(), ...payload };
+export function addMessage(payload: MessagePayload): Result<Message, string> {
+    let message: Message = { id: uuidv4(), created_at: ic.time(), updated_at: Opt.None, ...payload };
     messageStorage.insert(message.id, message);
-    return { message };
-};
+    return Result.Ok<Message, string>(message);
+}
 
 $update;
-export function updateMessage(payload: Message): Response {
-    let response: Response;
-    return match(messageStorage.get(payload.id), {
+export function updateMessage(id: string, payload: MessagePayload): Result<Message, string> {
+    return match(messageStorage.get(id), {
         Some: (message) => {
-            messageStorage.insert(message.id, payload);
-            return response = { message: payload };
+            let updatedMessage: Message = {...message, ...payload, updated_at: Opt.Some(ic.time())};
+            messageStorage.insert(message.id, updatedMessage);
+            return Result.Ok<Message, string>(updatedMessage);
         },
-        None: () => response = { error: `couldn't update a message with id=${payload.id}. message not found` }
+        None: () => Result.Err<Message, string>(`couldn't update a message with id=${id}. message not found`)
     });
-};
+}
 
 $update;
-export function deleteMessage(id: string): Response {
-    let response: Response;
+export function deleteMessage(id: string): Result<Message, string> {
     return match(messageStorage.remove(id), {
-        Some: (deletedMessage) => response = { id: deletedMessage.id },
-        None: () => response = { error: `couldn't delete a message with id=${id}. message not found.` }
+        Some: (deletedMessage) => Result.Ok<Message, string>(deletedMessage),
+        None: () => Result.Err<Message, string>(`couldn't delete a message with id=${id}. message not found.`)
     });
+}
+
+// a workaround to make uuid package work with Azle
+globalThis.crypto = {
+    getRandomValues: () => {
+        let array = new Uint8Array(32);
+
+        for (let i = 0; i < array.length; i++) {
+            array[i] = Math.floor(Math.random() * 256);
+        }
+
+        return array;
+    }
 };

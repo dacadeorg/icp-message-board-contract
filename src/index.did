@@ -2,23 +2,21 @@ type Message = record {
   id : text;
   attachmentURL : text;
   title : text;
+  updated_at : opt nat64;
   body : text;
+  created_at : nat64;
 };
 type MessagePayload = record {
   attachmentURL : text;
   title : text;
   body : text;
 };
-type Response = variant {
-  id : text;
-  messages : vec Message;
-  error : text;
-  message : Message;
-};
+type _AzleResult = variant { Ok : Message; Err : text };
+type _AzleResult_1 = variant { Ok : vec Message; Err : text };
 service : () -> {
-  addMessage : (MessagePayload) -> (Response);
-  deleteMessage : (text) -> (Response);
-  getMessage : (text) -> (Response) query;
-  getMessages : () -> (Response) query;
-  updateMessage : (Message) -> (Response);
+  addMessage : (MessagePayload) -> (_AzleResult);
+  deleteMessage : (text) -> (_AzleResult);
+  getMessage : (text) -> (_AzleResult) query;
+  getMessages : () -> (_AzleResult_1) query;
+  updateMessage : (text, MessagePayload) -> (_AzleResult);
 }
