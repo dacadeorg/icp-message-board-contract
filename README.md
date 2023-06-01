@@ -57,22 +57,27 @@ where `message_board` is the name of the canister.
   "dependencies": {
     "@dfinity/agent": "^0.15.6",
     "@dfinity/candid": "^0.15.6",
-    "azle": "0.16.2"
+    "azle": "0.16.2",
+    "uuid": "^9.0.0"
   },
   "engines": {
     "node": "^12 || ^14 || ^16 || ^18"
-  },
-  "devDependencies": {
-    "uuid": "^9.0.0"
   }
 }
 ```
 
-7. Run local replica in background
+7. Run a local replica in background
 - `dfx start --background`
+
+#### IMPORTANT NOTE 
+If you make any changes to the `StableBTreeMap` structure like change datatypes for keys or values, changing size of the key or value, you need to restart `dfx` with the `--clean` flag. `StableBTreeMap` is immutable and any changes to it's configuration after it's been initialized are not supported.
+- `dfx start --background --clean`
 
 8. Deploy a canister
 - `dfx deploy`
+
+9. Stop a local replica
+- `dfx stop`
 
 ## Interaction with the canister
 

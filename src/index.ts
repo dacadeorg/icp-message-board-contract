@@ -52,16 +52,16 @@ export function getMessage(id: string): Result<Message, string> {
 
 $update;
 export function addMessage(payload: MessagePayload): Result<Message, string> {
-    let message: Message = { id: uuidv4(), created_at: ic.time(), updated_at: Opt.None, ...payload };
+    const message: Message = { id: uuidv4(), created_at: ic.time(), updated_at: Opt.None, ...payload };
     messageStorage.insert(message.id, message);
-    return Result.Ok<Message, string>(message);
+    return Result.Ok(message);
 }
 
 $update;
 export function updateMessage(id: string, payload: MessagePayload): Result<Message, string> {
     return match(messageStorage.get(id), {
         Some: (message) => {
-            let updatedMessage: Message = {...message, ...payload, updated_at: Opt.Some(ic.time())};
+            const updatedMessage: Message = {...message, ...payload, updated_at: Opt.Some(ic.time())};
             messageStorage.insert(message.id, updatedMessage);
             return Result.Ok<Message, string>(updatedMessage);
         },
