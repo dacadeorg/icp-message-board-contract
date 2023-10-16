@@ -1,22 +1,7 @@
-type Message = record {
-  id : text;
-  attachmentURL : text;
-  title : text;
-  updated_at : opt nat64;
-  body : text;
-  created_at : nat64;
-};
-type MessagePayload = record {
-  attachmentURL : text;
-  title : text;
-  body : text;
-};
-type _AzleResult = variant { Ok : Message; Err : text };
-type _AzleResult_1 = variant { Ok : vec Message; Err : text };
-service : () -> {
-  addMessage : (MessagePayload) -> (_AzleResult);
-  deleteMessage : (text) -> (_AzleResult);
-  getMessage : (text) -> (_AzleResult) query;
-  getMessages : () -> (_AzleResult_1) query;
-  updateMessage : (text, MessagePayload) -> (_AzleResult);
+service: () -> {
+    addMessage: (record {attachmentURL:text; title:text; body:text}) -> (variant {Ok:record {id:text; attachmentURL:text; title:text; body:text; createdAt:nat64; updatedAt:opt nat64}; Err:variant {InvalidPayload:text; NotFound:text}});
+    deleteMessage: (text) -> (variant {Ok:record {id:text; attachmentURL:text; title:text; body:text; createdAt:nat64; updatedAt:opt nat64}; Err:variant {InvalidPayload:text; NotFound:text}});
+    getMessage: (text) -> (variant {Ok:record {id:text; attachmentURL:text; title:text; body:text; createdAt:nat64; updatedAt:opt nat64}; Err:variant {InvalidPayload:text; NotFound:text}}) query;
+    getMessages: () -> (variant {Ok:vec record {id:text; attachmentURL:text; title:text; body:text; createdAt:nat64; updatedAt:opt nat64}; Err:variant {InvalidPayload:text; NotFound:text}}) query;
+    updateMessage: (text, record {attachmentURL:text; title:text; body:text}) -> (variant {Ok:record {id:text; attachmentURL:text; title:text; body:text; createdAt:nat64; updatedAt:opt nat64}; Err:variant {InvalidPayload:text; NotFound:text}});
 }
