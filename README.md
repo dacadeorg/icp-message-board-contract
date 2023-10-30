@@ -55,7 +55,7 @@ where `message_board` is the name of the canister.
   "dependencies": {
     "@dfinity/agent": "^0.19.2",
     "@dfinity/candid": "^0.19.2",
-    "azle": "0.18.1",
+    "azle": "^0.18.6",
     "uuid": "^9.0.0"
   },
   "engines": {
