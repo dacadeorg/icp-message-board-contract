@@ -1,84 +1,85 @@
-import { $query, $update, Record, StableBTreeMap, Vec, match, Result, nat64, ic, Opt } from 'azle';
+import { query, update, Canister, text, Record, StableBTreeMap, Ok, None, Some, Err, Vec, Result, nat64, ic, Opt, Variant } from 'azle';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
  * This type represents a message that can be listed on a board.
  */
-type Message = Record<{
-    id: string;
-    title: string;
-    body: string;
-    attachmentURL: string;
-    created_at: nat64;
-    updated_at: Opt<nat64>;
-}>
+const Message = Record({
+    id: text,
+    title: text,
+    body: text,
+    attachmentURL: text,
+    createdAt: nat64,
+    updatedAt: Opt(nat64)
+});
 
-type MessagePayload = Record<{
-    title: string;
-    body: string;
-    attachmentURL: string;
-}>
+const MessagePayload = Record({
+    title: text,
+    body: text,
+    attachmentURL: text
+});
+
+const Error = Variant({
+    NotFound: text,
+    InvalidPayload: text,
+});
 
 /**
- * `messageStorage` - it's a key-value datastructure that is used to store messages.
+ * `messagesStorage` - it's a key-value datastructure that is used to store messages.
  * {@link StableBTreeMap} is a self-balancing tree that acts as a durable data storage that keeps data across canister upgrades.
  * For the sake of this contract we've chosen {@link StableBTreeMap} as a storage for the next reasons:
  * - `insert`, `get` and `remove` operations have a constant time complexity - O(1)
+ * - data stored in the map survives canister upgrades unlike using HashMap where data is stored in the heap and it's lost after the canister is upgraded
  * 
- * Brakedown of the `StableBTreeMap<string, Message>` datastructure:
+ * Brakedown of the `StableBTreeMap(text, Message)` datastructure:
  * - the key of map is a `messageId`
  * - the value in this map is a message itself `Message` that is related to a given key (`messageId`)
  * 
  * Constructor values:
- * 1) 0 - memory id where to initialize a map
- * 2) 44 - it's a max size of the key in bytes (size of the uuid value that we use for ids).
- * 3) 1024 - it's a max size of the value in bytes. 
- * 2 and 3 are not being used directly in the constructor but the Azle compiler utilizes these values during compile time
+ * 1) text - the type of the key in the map
+ * 2) Message - the type of the value in the map.
+ * 3) 0 - memory id where to initialize a map.
  */
-const messageStorage = new StableBTreeMap<string, Message>(0, 44, 1024);
+const messagesStorage = StableBTreeMap(text, Message, 0);
 
-$query;
-export function getMessages(): Result<Vec<Message>, string> {
-    return Result.Ok(messageStorage.values());
-}
-
-$query;
-export function getMessage(id: string): Result<Message, string> {
-    return match(messageStorage.get(id), {
-        Some: (message) => Result.Ok<Message, string>(message),
-        None: () => Result.Err<Message, string>(`a message with id=${id} not found`)
-    });
-}
-
-$update;
-export function addMessage(payload: MessagePayload): Result<Message, string> {
-    const message: Message = { id: uuidv4(), created_at: ic.time(), updated_at: Opt.None, ...payload };
-    messageStorage.insert(message.id, message);
-    return Result.Ok(message);
-}
-
-$update;
-export function updateMessage(id: string, payload: MessagePayload): Result<Message, string> {
-    return match(messageStorage.get(id), {
-        Some: (message) => {
-            const updatedMessage: Message = {...message, ...payload, updated_at: Opt.Some(ic.time())};
-            messageStorage.insert(message.id, updatedMessage);
-            return Result.Ok<Message, string>(updatedMessage);
-        },
-        None: () => Result.Err<Message, string>(`couldn't update a message with id=${id}. message not found`)
-    });
-}
-
-$update;
-export function deleteMessage(id: string): Result<Message, string> {
-    return match(messageStorage.remove(id), {
-        Some: (deletedMessage) => Result.Ok<Message, string>(deletedMessage),
-        None: () => Result.Err<Message, string>(`couldn't delete a message with id=${id}. message not found.`)
-    });
-}
+export default Canister({
+    getMessages: query([], Result(Vec(Message), Error), () => {
+        return Ok(messagesStorage.values());
+    }),
+    getMessage: query([text], Result(Message, Error), (id) => {
+        const messageOpt = messagesStorage.get(id);
+        if ("None" in messageOpt) {
+            return Err({ NotFound: `the message with id=${id} not found` });
+        }
+        return Ok(messageOpt.Some);
+    }),
+    addMessage: update([MessagePayload], Result(Message, Error), (payload) => {
+        const message = { id: uuidv4(), createdAt: ic.time(), updatedAt: None, ...payload };
+        messagesStorage.insert(message.id, message);
+        return Ok(message);
+    }),
+    updateMessage: update([text, MessagePayload], Result(Message, Error), (id, payload) => {
+        const messageOpt = messagesStorage.get(id);
+        if ("None" in messageOpt) {
+            return Err({ NotFound: `couldn't update a message with id=${id}. message not found` });
+        }
+        const message = messageOpt.Some;
+        const updatedMessage = { ...message, ...payload, updatedAt: Some(ic.time()) };
+        messagesStorage.insert(message.id, updatedMessage);
+        return Ok(updatedMessage);
+    }),
+    deleteMessage: update([text], Result(Message, Error), (id) => {
+        const deletedMessage = messagesStorage.remove(id);
+        if ("None" in deletedMessage) {
+            return Err({ NotFound: `couldn't delete a message with id=${id}. message not found` });
+        }
+        return Ok(deletedMessage.Some);
+    })
+});
 
 // a workaround to make uuid package work with Azle
 globalThis.crypto = {
+    // @ts-ignore
     getRandomValues: () => {
         let array = new Uint8Array(32);
 

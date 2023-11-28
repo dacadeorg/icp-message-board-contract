@@ -5,9 +5,10 @@
 
 2. Switch to node v18:
 - `nvm use 18`
+- `npm i esbuild-wasm` - for Apple Silicon only
 
 3. Install `dfx`
-- `DFX_VERSION=0.14.0 sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"`
+- `DFX_VERSION=0.15.0 sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"`
 
 4. Add `dfx` to PATH:
 - `echo 'export PATH="$PATH:$HOME/bin"' >> "$HOME/.bashrc"`
@@ -21,12 +22,9 @@
     "compilerOptions": {
         "strict": true,
         "target": "ES2020",
-        "experimentalDecorators": true,
-        "strictPropertyInitialization": false,
         "moduleResolution": "node",
         "allowJs": true,
-        "outDir": "HACK_BECAUSE_OF_ALLOW_JS",
-        "allowSyntheticDefaultImports": true
+        "outDir": "HACK_BECAUSE_OF_ALLOW_JS"
     }
 }
 ```
@@ -35,13 +33,13 @@
 {
   "canisters": {
     "message_board": {
-      "main": "src/index.ts",
       "type": "custom",
-      "build": "npx azle message_board",
-      "root": "src",
-      "ts": "src/index.ts",
+      "main": "src/index.ts",
       "candid": "src/index.did",
-      "wasm": ".azle/message_board/message_board.wasm.gz"
+      "build": "npx azle message_board",
+      "ts": "src/index.ts",
+      "wasm": ".azle/message_board/message_board.wasm",
+      "gzip": true
     }
   }
 }
@@ -55,9 +53,9 @@ where `message_board` is the name of the canister.
   "version": "0.1.0",
   "description": "Internet Computer message board application",
   "dependencies": {
-    "@dfinity/agent": "^0.15.6",
-    "@dfinity/candid": "^0.15.6",
-    "azle": "0.16.2",
+    "@dfinity/agent": "^0.19.2",
+    "@dfinity/candid": "^0.19.2",
+    "azle": "^0.18.6",
     "uuid": "^9.0.0"
   },
   "engines": {
