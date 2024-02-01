@@ -1,3 +1,13 @@
+## Getting started
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/fxgst/icp-message-board-contract)
+
+If you rather want to use GitHub Codespaces, click this button instead:
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/fxgst/icp-message-board-contract?quickstart=1)
+
+[![Open locally in Dev Containers](https://img.shields.io/static/v1?label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/fxgst/icp-message-board-contract)
+
 ## Prerequisities
 
 1. Install `nvm`:
