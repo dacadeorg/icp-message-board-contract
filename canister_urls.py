@@ -17,7 +17,7 @@ if __name__ == "__main__":
     root_path = path.dirname(path.realpath(__file__))
     canister_id_file = f'{root_path}/.dfx/local/canister_ids.json';
     if not path.exists(canister_id_file):
-        print(f"Follow the readme to deploy the canisters first.")
+        print(f"Run 'dfx deploy' first.")
         exit(1)
     with open(canister_id_file) as f:
         data = json.load(f)
