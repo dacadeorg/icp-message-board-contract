@@ -9,12 +9,6 @@ tasks:
       dfx start --background --clean
       open README.md
 
-vscode:
-  extensions:
-    - dfinity-foundation.vscode-motoko
-    - tamasfe.even-better-toml
-    - rust-lang.rust-analyzer
-
 ports:
   - name: Replica
     port: 4943
