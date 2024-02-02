@@ -7,7 +7,7 @@ tasks:
       sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
       npm install &
       dfx start --background --clean
-      #open README.md
+      open README.md
 
 vscode:
   extensions:
@@ -20,7 +20,3 @@ ports:
     port: 4943
     visibility: public
     onOpen: ignore
-  - name: Dev Server
-    port: 8080
-    visibility: public
-    onOpen: open-browser
