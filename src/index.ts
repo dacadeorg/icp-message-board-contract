@@ -1,28 +1,7 @@
-import { query, update, Canister, text, Record, StableBTreeMap, Ok, None, Some, Err, Vec, Result, nat64, ic, Opt, Variant } from 'azle';
 import { v4 as uuidv4 } from 'uuid';
-
-/**
- * This type represents a message that can be listed on a board.
- */
-const Message = Record({
-    id: text,
-    title: text,
-    body: text,
-    attachmentURL: text,
-    createdAt: nat64,
-    updatedAt: Opt(nat64)
-});
-
-const MessagePayload = Record({
-    title: text,
-    body: text,
-    attachmentURL: text
-});
-
-const Error = Variant({
-    NotFound: text,
-    InvalidPayload: text,
-});
+import { Server, StableBTreeMap, ic } from 'azle';
+import express, { Request, Response } from 'express';
+import bodyParser from 'body-parser';
 
 /**
  * `messagesStorage` - it's a key-value datastructure that is used to store messages.
@@ -31,62 +10,79 @@ const Error = Variant({
  * - `insert`, `get` and `remove` operations have a constant time complexity - O(1)
  * - data stored in the map survives canister upgrades unlike using HashMap where data is stored in the heap and it's lost after the canister is upgraded
  * 
- * Brakedown of the `StableBTreeMap(text, Message)` datastructure:
+ * Brakedown of the `StableBTreeMap(string, Message)` datastructure:
  * - the key of map is a `messageId`
  * - the value in this map is a message itself `Message` that is related to a given key (`messageId`)
  * 
  * Constructor values:
- * 1) text - the type of the key in the map
- * 2) Message - the type of the value in the map.
- * 3) 0 - memory id where to initialize a map.
+ * 1) 0 - memory id where to initialize a map.
  */
-const messagesStorage = StableBTreeMap(text, Message, 0);
 
-export default Canister({
-    getMessages: query([], Result(Vec(Message), Error), () => {
-        return Ok(messagesStorage.values());
-    }),
-    getMessage: query([text], Result(Message, Error), (id) => {
-        const messageOpt = messagesStorage.get(id);
-        if ("None" in messageOpt) {
-            return Err({ NotFound: `the message with id=${id} not found` });
-        }
-        return Ok(messageOpt.Some);
-    }),
-    addMessage: update([MessagePayload], Result(Message, Error), (payload) => {
-        const message = { id: uuidv4(), createdAt: ic.time(), updatedAt: None, ...payload };
+/**
+    This type represents a message that can be listed on a board.
+*/
+class Message {
+    id: string;
+    title: string;
+    body: string;
+    attachmentURL: string;
+    createdAt: Date;
+    updatedAt: Date | null
+}
+
+const messagesStorage = StableBTreeMap<string, Message>(0);
+
+export default Server(() => {
+    const app = express();
+    app.use(bodyParser.json());
+    
+    app.post("/messages", (req: Request, res: Response) => {
+        const message: Message =  {id: uuidv4(), createdAt: getCurrentDate(), ...req.body};
         messagesStorage.insert(message.id, message);
-        return Ok(message);
-    }),
-    updateMessage: update([text, MessagePayload], Result(Message, Error), (id, payload) => {
-        const messageOpt = messagesStorage.get(id);
+        res.json(message);
+    });
+
+    app.get("/messages", (req: Request, res: Response) => {
+        res.json(messagesStorage.values());
+    });
+
+    app.get("/messages/:id", (req: Request, res: Response) => {
+        const messageId = req.params.id;
+        const messageOpt = messagesStorage.get(messageId);
         if ("None" in messageOpt) {
-            return Err({ NotFound: `couldn't update a message with id=${id}. message not found` });
+            res.status(404).send(`the message with id=${messageId} not found`);
+        } else {
+            res.json(messageOpt.Some);
         }
-        const message = messageOpt.Some;
-        const updatedMessage = { ...message, ...payload, updatedAt: Some(ic.time()) };
-        messagesStorage.insert(message.id, updatedMessage);
-        return Ok(updatedMessage);
-    }),
-    deleteMessage: update([text], Result(Message, Error), (id) => {
-        const deletedMessage = messagesStorage.remove(id);
+    });
+
+    app.put("/messages/:id", (req: Request, res: Response) => {
+        const messageId = req.params.id;
+        const messageOpt = messagesStorage.get(messageId);
+        if ("None" in messageOpt) {
+            res.status(400).send(`couldn't update a message with id=${messageId}. message not found`);
+        } else {
+            const message = messageOpt.Some;
+            const updatedMessage = { ...message, ...req.body, updatedAt: getCurrentDate()};
+            messagesStorage.insert(message.id, updatedMessage);
+            res.json(updatedMessage);
+        }
+    });
+
+    app.delete("/messages/:id", (req: Request, res: Response) => {
+        const messageId = req.params.id;
+        const deletedMessage = messagesStorage.remove(messageId);
         if ("None" in deletedMessage) {
-            return Err({ NotFound: `couldn't delete a message with id=${id}. message not found` });
+            res.status(400).send(`couldn't delete a message with id=${messageId}. message not found`);
+        } else {
+            res.json(deletedMessage.Some);
         }
-        return Ok(deletedMessage.Some);
-    })
+    });
+
+    return app.listen();
 });
 
-// a workaround to make uuid package work with Azle
-globalThis.crypto = {
-    // @ts-ignore
-    getRandomValues: () => {
-        let array = new Uint8Array(32);
-
-        for (let i = 0; i < array.length; i++) {
-            array[i] = Math.floor(Math.random() * 256);
-        }
-
-        return array;
-    }
-};
+function getCurrentDate() {
+    const timestamp = new Number(ic.time());
+    return new Date(timestamp.valueOf() / 1000_000);
+}

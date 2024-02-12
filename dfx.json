@@ -5,7 +5,6 @@
       "main": "src/index.ts",
       "candid": "src/index.did",
       "build": "npx azle message_board",
-      "ts": "src/index.ts",
       "wasm": ".azle/message_board/message_board.wasm",
       "gzip": true
     }
