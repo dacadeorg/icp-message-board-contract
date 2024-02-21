@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Server, StableBTreeMap, ic } from 'azle';
-import express, { Request, Response } from 'express';
-import bodyParser from 'body-parser';
+import express from 'express';
 
 /**
  * `messagesStorage` - it's a key-value datastructure that is used to store messages.
@@ -34,19 +33,19 @@ const messagesStorage = StableBTreeMap<string, Message>(0);
 
 export default Server(() => {
     const app = express();
-    app.use(bodyParser.json());
+    app.use(express.json());
     
-    app.post("/messages", (req: Request, res: Response) => {
+    app.post("/messages", (req, res) => {
         const message: Message =  {id: uuidv4(), createdAt: getCurrentDate(), ...req.body};
         messagesStorage.insert(message.id, message);
         res.json(message);
     });
 
-    app.get("/messages", (req: Request, res: Response) => {
+    app.get("/messages", (req, res) => {
         res.json(messagesStorage.values());
     });
 
-    app.get("/messages/:id", (req: Request, res: Response) => {
+    app.get("/messages/:id", (req, res) => {
         const messageId = req.params.id;
         const messageOpt = messagesStorage.get(messageId);
         if ("None" in messageOpt) {
@@ -56,7 +55,7 @@ export default Server(() => {
         }
     });
 
-    app.put("/messages/:id", (req: Request, res: Response) => {
+    app.put("/messages/:id", (req, res) => {
         const messageId = req.params.id;
         const messageOpt = messagesStorage.get(messageId);
         if ("None" in messageOpt) {
@@ -69,7 +68,7 @@ export default Server(() => {
         }
     });
 
-    app.delete("/messages/:id", (req: Request, res: Response) => {
+    app.delete("/messages/:id", (req, res) => {
         const messageId = req.params.id;
         const deletedMessage = messagesStorage.remove(messageId);
         if ("None" in deletedMessage) {

@@ -15,24 +15,19 @@ If you rather want to use GitHub Codespaces, click this button instead:
 1. Install `nvm`:
 - `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash`
 
-2. Switch to node v18:
-- `nvm use 18`
-- `npm i esbuild-wasm` - for Apple Silicon only
+2. Switch to node v20:
+- `nvm install 20`
+- `nvm use 20`
 
 3. Install build dependencies:
 ## For Ubuntu and WSL2
 ```
-sudo apt update
-sudo apt install clang
-sudo apt install build-essential
-sudo apt install libssl-dev
-sudo apt install pkg-config
+sudo apt-get install podman
 ```
 ## For macOS:
 ```
 xcode-select --install
-brew install llvm
-echo 'export PATH="/opt/homebrew/opt/llvm/bin:$PATH"' >> ~/.zshrc
+brew install podman
 ```
 
 4. Install `dfx`
@@ -66,9 +61,20 @@ echo 'export PATH="/opt/homebrew/opt/llvm/bin:$PATH"' >> ~/.zshrc
       "type": "custom",
       "main": "src/index.ts",
       "candid": "src/index.did",
+      "candid_gen": "http",
       "build": "npx azle message_board",
       "wasm": ".azle/message_board/message_board.wasm",
-      "gzip": true
+      "gzip": true,
+      "metadata": [
+        {
+            "name": "candid:service",
+            "path": "src/index.did"
+        },
+        {
+            "name": "cdk:name",
+            "content": "azle"
+        }
+    ]
     }
   }
 }
@@ -84,8 +90,7 @@ where `message_board` is the name of the canister.
   "dependencies": {
     "@dfinity/agent": "^0.21.4",
     "@dfinity/candid": "^0.21.4",
-    "azle": "^0.20.1",
-    "body-parser": "^1.20.2",
+    "azle": "^0.20.2",
     "express": "^4.18.2",
     "uuid": "^9.0.1"
   },
@@ -93,10 +98,10 @@ where `message_board` is the name of the canister.
     "node": "^12 || ^14 || ^16 || ^18 || ^20"
   },
   "devDependencies": {
-    "@types/body-parser": "^1.19.5",
     "@types/express": "^4.17.21"
   }
 }
+
 ```
 
 7. Run a local replica
@@ -108,6 +113,10 @@ If you make any changes to the `StableBTreeMap` structure like change datatypes 
 
 8. Deploy a canister
 - `dfx deploy`
+Also, if you are building an HTTP-based canister and would like your canister to autoreload on file changes (DO NOT deploy to mainnet with autoreload enabled):
+```
+AZLE_AUTORELOAD=true dfx deploy
+```
 
 9. Stop a local replica
 - `dfx stop`
