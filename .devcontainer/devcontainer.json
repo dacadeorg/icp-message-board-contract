@@ -1,6 +1,6 @@
 {
 	"name": "ICP Message Board Contract",
-	"image": "ghcr.io/dfinity/icp-dev-env-azle:4",
+	"image": "ghcr.io/fxgst/icp-dev-env-azle:4",
 	"forwardPorts": [4943],
     "portsAttributes": {
         "4943": {
