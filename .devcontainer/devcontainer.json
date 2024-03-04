@@ -1,16 +1,24 @@
 {
-	"name": "ICP Message Board Contract",
+    "name": "ICP Message Board Contract",
     "build": {
         "dockerfile": "Dockerfile"
     },
     "privileged": true,
-    "securityOpt": [ "seccomp=unconfined", "label=disabled" ],
-    "forwardPorts": [4943],
+    // "securityOpt": [
+    //     "seccomp=unconfined",
+    //     "label=disabled"
+    // ],
+    "runArgs": [
+        "--cgroupns=host"
+    ],
+    "forwardPorts": [
+        4943
+    ],
     "portsAttributes": {
         "4943": {
             "label": "dfx",
             "onAutoForward": "ignore"
         }
     },
-	"remoteUser": "root"
+    "remoteUser": "root"
 }

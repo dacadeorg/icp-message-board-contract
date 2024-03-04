@@ -1,4 +1,5 @@
-FROM ubuntu:22.04
+FROM --platform=linux/amd64 ubuntu:22.04
+# --platform=linux/amd64 mcr.microsoft.com/devcontainers/typescript-node:dev-20-bookworm
 
 USER root
 
@@ -7,7 +8,8 @@ ENV DFX_VERSION=0.17.0
 # Install a basic environment needed for our build tools
 RUN apt -yq update && \
     apt -yqq install --no-install-recommends curl ca-certificates \
-    build-essential pkg-config libssl-dev llvm-dev liblmdb-dev clang cmake rsync git libunwind-dev software-properties-common uidmap ssh qemu-utils qemu-system-x86 podman
+    build-essential pkg-config libssl-dev llvm-dev liblmdb-dev clang cmake rsync git \
+    libunwind-dev software-properties-common uidmap ssh qemu-utils qemu-system-x86 podman
 
 # Install dfx
 ENV DFXVM_INIT_YES=true
