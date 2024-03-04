@@ -7,12 +7,6 @@ RUN apt -yq update && \
     apt -yqq install --no-install-recommends curl ca-certificates \
     build-essential pkg-config libssl-dev llvm-dev liblmdb-dev clang cmake rsync git libunwind-dev software-properties-common uidmap podman
 
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-RUN export NVM_DIR="$HOME/.nvm" \
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm \
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-RUN nvm install 20 && nvm use 20
-
 # Install dfx
 ENV DFXVM_INIT_YES=true
 RUN sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
