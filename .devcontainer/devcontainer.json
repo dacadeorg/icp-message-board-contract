@@ -2,7 +2,10 @@
 	"name": "ICP Message Board Contract",
     "build": {
         "dockerfile": "Dockerfile"
-    },	"forwardPorts": [4943],
+    },
+    "privileged": true,
+    "securityOpt": [ "seccomp=unconfined", "label=disabled" ],
+    "forwardPorts": [4943],
     "portsAttributes": {
         "4943": {
             "label": "dfx",
