@@ -4,10 +4,10 @@
         "dockerfile": "Dockerfile"
     },
     "privileged": true,
-    // "securityOpt": [
-    //     "seccomp=unconfined",
-    //     "label=disabled"
-    // ],
+    "securityOpt": [
+        "seccomp=unconfined",
+        "label=disabled"
+    ],
     "runArgs": [
         "--cgroupns=host"
     ],

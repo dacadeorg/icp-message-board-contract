@@ -1,5 +1,7 @@
-FROM --platform=linux/amd64 ubuntu:22.04
-# --platform=linux/amd64 mcr.microsoft.com/devcontainers/typescript-node:dev-20-bookworm
+# works on linux
+FROM --platform=linux/amd64 ubuntu:22.04 
+
+# FROM --platform=linux/amd64 debian:12
 
 USER root
 
@@ -9,7 +11,7 @@ ENV DFX_VERSION=0.17.0
 RUN apt -yq update && \
     apt -yqq install --no-install-recommends curl ca-certificates \
     build-essential pkg-config libssl-dev llvm-dev liblmdb-dev clang cmake rsync git \
-    libunwind-dev software-properties-common uidmap ssh qemu-utils qemu-system-x86 podman
+    libunwind-dev ssh podman
 
 # Install dfx
 ENV DFXVM_INIT_YES=true
