@@ -9,8 +9,7 @@
         "label=disabled"
     ],
     "runArgs": [
-        "--cgroupns=host",
-        "--device=/dev/fuse"
+        "--cgroupns=host"
     ],
     "forwardPorts": [
         4943
