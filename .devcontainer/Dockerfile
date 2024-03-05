@@ -1,17 +1,16 @@
 # works on linux
-FROM --platform=linux/amd64 ubuntu:22.04 
+FROM --platform=linux/amd64 mcr.microsoft.com/devcontainers/typescript-node:dev-20-bookworm 
 
 # FROM --platform=linux/amd64 debian:12
 
-USER root
+# USER root
 
 ENV DFX_VERSION=0.17.0
 
 # Install a basic environment needed for our build tools
-RUN apt -yq update && \
-    apt -yqq install --no-install-recommends curl ca-certificates \
-    build-essential pkg-config libssl-dev llvm-dev liblmdb-dev clang cmake rsync git \
-    libunwind-dev ssh podman
+RUN apt-get -yq update
+RUN apt-get -yqq install --no-install-recommends curl ca-certificates \
+    build-essential pkg-config libssl-dev llvm-dev liblmdb-dev clang cmake rsync git podman
 
 # Install dfx
 ENV DFXVM_INIT_YES=true
