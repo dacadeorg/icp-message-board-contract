@@ -1,7 +1,4 @@
-# works on linux
 FROM --platform=linux/amd64 mcr.microsoft.com/devcontainers/typescript-node:dev-20-bookworm 
-
-# FROM --platform=linux/amd64 debian:12
 
 # USER root
 
