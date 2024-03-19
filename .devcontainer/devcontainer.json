@@ -3,14 +3,14 @@
     "build": {
         "dockerfile": "Dockerfile"
     },
-    "privileged": true,
-    "securityOpt": [
-        "seccomp=unconfined",
-        "label=disabled"
-    ],
-    "runArgs": [
-        "--cgroupns=host"
-    ],
+    // "privileged": true,
+    // "securityOpt": [
+    //     "seccomp=unconfined",
+    //     "label=disabled"
+    // ],
+    // "runArgs": [
+    //     "--cgroupns=host"
+    // ],
     "forwardPorts": [
         4943
     ],
