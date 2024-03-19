@@ -1,3 +1,4 @@
+image: ghcr.io/fxgst/icp-dev-env-azle:8
 tasks:
   - before: |
       export PATH="$HOME/bin:$PATH"
