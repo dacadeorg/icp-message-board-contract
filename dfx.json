@@ -5,7 +5,7 @@
       "main": "src/index.ts",
       "candid": "src/index.did",
       "candid_gen": "http",
-      "build": "npx azle message_board --native-compilation",
+      "build": "npx azle message_board",
       "wasm": ".azle/message_board/message_board.wasm",
       "gzip": true,
       "metadata": [

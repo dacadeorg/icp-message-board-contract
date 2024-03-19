@@ -11,6 +11,7 @@
         }
     },
     "onCreateCommand": "nohup bash -c 'dfx start &'",
+    "updateContentCommand": "sed -i 's/npx azle message_board/npx azle message_board --native-compilation/g' dfx.json",
     "postAttachCommand": "([ -f nohup.out ] && (npm i && cat nohup.out && rm nohup.out)) || exit 0",
     "remoteUser": "root"
 }

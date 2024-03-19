@@ -15,6 +15,7 @@ tasks:
       cd $FOO
       mkdir -p ${HOME}/.config/azle
       mv $HOME/wasmedge-quickjs ${HOME}/.config/azle/wasmedge_quickjs_$(npx azle@0.21.0-rc.0 dockerfile-hash)
+      sed -i 's/npx azle message_board/npx azle message_board --native-compilation/g' dfx.json
       open README.md
 
 ports:
