@@ -1,16 +1,9 @@
 {
     "name": "ICP Message Board Contract",
-    "build": {
-        "dockerfile": "Dockerfile"
-    },
-    // "privileged": true,
-    // "securityOpt": [
-    //     "seccomp=unconfined",
-    //     "label=disabled"
-    // ],
-    // "runArgs": [
-    //     "--cgroupns=host"
-    // ],
+    // "build": {
+    //     "dockerfile": "Dockerfile"
+    // },
+    "image": "ghcr.io/fxgst/icp-dev-env-azle:8",
     "forwardPorts": [
         4943
     ],
