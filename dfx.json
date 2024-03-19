@@ -10,14 +10,14 @@
       "gzip": true,
       "metadata": [
         {
-          "name": "candid:service",
-          "path": "src/index.did"
+            "name": "candid:service",
+            "path": "src/index.did"
         },
         {
-          "name": "cdk:name",
-          "content": "azle"
+            "name": "cdk:name",
+            "content": "azle"
         }
-      ]
+    ]
     }
   }
 }
