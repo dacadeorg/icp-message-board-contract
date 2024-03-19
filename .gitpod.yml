@@ -14,7 +14,7 @@ tasks:
       cd $HOME && git clone https://github.com/demergent-labs/wasmedge-quickjs && cd wasmedge-quickjs && git checkout 6c81d7e6fe4b22a468beceed0ee697f4163e7ca8
       cd $FOO
       mkdir -p ${HOME}/.config/azle
-      cp -r $HOME/wasmedge-quickjs ${HOME}/.config/azle/wasmedge_quickjs_$(npx azle@0.21.0-rc.0 dockerfile-hash)
+      mv $HOME/wasmedge-quickjs ${HOME}/.config/azle/wasmedge_quickjs_$(npx azle@0.21.0-rc.0 dockerfile-hash)
       open README.md
 
 ports:

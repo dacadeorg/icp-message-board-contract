@@ -1,9 +1,6 @@
 {
     "name": "ICP Message Board Contract",
-    // "build": {
-    //     "dockerfile": "Dockerfile"
-    // },
-    "image": "ghcr.io/fxgst/icp-dev-env-azle:10",
+    "image": "ghcr.io/fxgst/icp-dev-env-azle:11",
     "forwardPorts": [
         4943
     ],
