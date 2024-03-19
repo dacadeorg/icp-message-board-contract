@@ -3,7 +3,7 @@
     // "build": {
     //     "dockerfile": "Dockerfile"
     // },
-    "image": "ghcr.io/fxgst/icp-dev-env-azle:8",
+    "image": "ghcr.io/fxgst/icp-dev-env-azle:10",
     "forwardPorts": [
         4943
     ],
