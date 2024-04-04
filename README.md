@@ -98,12 +98,12 @@ where `message_board` is the name of the canister.
   "dependencies": {
     "@dfinity/agent": "^0.21.4",
     "@dfinity/candid": "^0.21.4",
-    "azle": "^0.20.2",
+    "azle": "^0.21.1",
     "express": "^4.18.2",
     "uuid": "^9.0.1"
   },
   "engines": {
-    "node": "^12 || ^14 || ^16 || ^18 || ^20"
+    "node": "^20"
   },
   "devDependencies": {
     "@types/express": "^4.17.21"
