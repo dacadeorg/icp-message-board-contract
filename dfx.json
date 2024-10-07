@@ -8,16 +8,19 @@
       "build": "npx azle message_board",
       "wasm": ".azle/message_board/message_board.wasm",
       "gzip": true,
+      "declarations": {
+        "node_compatibility": true
+      },
       "metadata": [
         {
-            "name": "candid:service",
-            "path": "src/index.did"
+          "name": "candid:service",
+          "path": "src/index.did"
         },
         {
-            "name": "cdk:name",
-            "content": "azle"
+          "name": "cdk:name",
+          "content": "azle"
         }
-    ]
+      ]
     }
   }
 }
