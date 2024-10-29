@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { StableBTreeMap } from "azle";
 import express from "express";
-import { time } from "azle/src/lib/ic/time";
+import { time } from "azle";
 
 /**
  * `messagesStorage` - it's a key-value datastructure that is used to store messages.
